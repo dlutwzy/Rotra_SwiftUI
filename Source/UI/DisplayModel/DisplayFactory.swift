@@ -8,6 +8,7 @@
 import Foundation
 
 import SwiftUI
+import Combine
 
 class DisplayFactory: ObservableObject {
     var type: Origin
@@ -15,6 +16,9 @@ class DisplayFactory: ObservableObject {
     @Published var resource: String = "0"
     
     weak var factory: Factory?
+    
+    private var _levelDispose: DebounceObject<String>?
+    private var _resourceDispose: DebounceObject<String>?
     
     init(factory: Factory) {
         
@@ -25,20 +29,34 @@ class DisplayFactory: ObservableObject {
         resource = "\(factory.value)"
         
         factory.delegate = self
+        
+        _config()
+    }
+    
+    private func _config() {
+        _resourceDispose = DebounceObject(value: resource, debounce: { [weak self] value in
+            self?.resource = value
+        })
+        
+        _levelDispose = DebounceObject(value: level, debounce: { [weak self] value in
+            self?.level = value
+        })
     }
 }
 
 extension DisplayFactory: FactoryDelegate {
     func levelChanged(factory: Factory, level: Int) {
-        DispatchQueue.main.async {
-            self.level = "\(level)"
+        guard factory === self.factory else {
+            return
         }
+        _levelDispose?.value = "\(level)"
     }
     
     func valueChanged(factory: Factory, value: Int64) {
-        DispatchQueue.main.async {
-            self.resource = "\(value)"
+        guard factory === self.factory else {
+            return
         }
+        _resourceDispose?.value = "\(value)"
     }
 }
 

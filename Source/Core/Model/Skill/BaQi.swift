@@ -19,6 +19,13 @@ class BaQi: TimerSkill {
         requiredLevel = 0
         skillType = .Magic
         
-        duration = 60.0
+//        duration = 60.0
+        duration = 6.0
+    }
+    
+    override func action() {
+        super.action()
+        
+        (hero?.normalAttack as? NormalAttack)?.pushExpendAttack(value: 8)
     }
 }

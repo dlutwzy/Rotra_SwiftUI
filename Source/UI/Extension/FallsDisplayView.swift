@@ -39,12 +39,30 @@ class FallsDisplayUIKitView: UIView {
         }
     }
     
+    private var _valuesDispose: DebounceObject<[String]>?
+    private var _needUpdateDispose: DebounceObject<Bool>?
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
         if !_prepared {
             
             clipsToBounds = true
+            
+            _valuesDispose = DebounceObject(value: [String](), duartion: 0.0001, debounce: { [weak self] value in
+                
+                self?._needUpdateDispose?.value = true
+                self?._values.append(value)
+            })
+            
+            _needUpdateDispose = DebounceObject(
+                value: false,
+                duartion: 0.04,
+                debounce: { [weak self] value in
+                    
+                self?._needUpdate = value
+                self?._displayUpdate()
+            })
             
             for _ in 0..<50 {
                 let label = UILabel()
@@ -55,17 +73,11 @@ class FallsDisplayUIKitView: UIView {
                 _labels.append(label)
             }
             
-            _displayLink = CADisplayLink(target: self, selector: #selector(FallsDisplayUIKitView.displayUpdate))
-            _displayLink?.preferredFramesPerSecond = 30
-            
-            _displayLink?.add(to: .main, forMode: .common)
-            
             _prepared = true
         }
     }
     
-    @objc
-    private func displayUpdate() {
+    private func _displayUpdate() {
         guard _needUpdate else {
             return
         }
@@ -98,12 +110,10 @@ class FallsDisplayUIKitView: UIView {
         }
     }
     
-    private var _displayLink: CADisplayLink?
     private var _prepared = false
     
     private var _needUpdate = false
     private var _values: [[String]] = [[String]]()
-    private let _semphore = DispatchSemaphore(value: 1)
     
     private var _labels: [UILabel] = [UILabel]()
 }
@@ -111,7 +121,6 @@ class FallsDisplayUIKitView: UIView {
 extension FallsDisplayUIKitView: FallsReceiver {
     
     func displayLabelUpdate(labels: [String]) {
-        _needUpdate = true
-        _values.append(labels)
+        _valuesDispose?.value = labels
     }
 }

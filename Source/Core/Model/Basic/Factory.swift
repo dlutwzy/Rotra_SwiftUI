@@ -50,12 +50,16 @@ class Factory: Basic {
             return
         }
         
-        value += Int64(Double(level) * pow(scalePer50Level, Double(Int(level / 50))))
-        
-        delegate?.valueChanged(factory: self, value: value)
+        let value = Int64(Double(level) * pow(scalePer50Level, Double(Int(level / 50))))
+        valueChanged(modifyValue: value)
         
         lastUpdateTime = nextUpdateTime
         nextUpdateTime = lastUpdateTime + duration
+    }
+    
+    final func valueChanged(modifyValue: Int64) {
+        value += modifyValue
+        delegate?.valueChanged(factory: self, value: value)
     }
     
     func prepare() {

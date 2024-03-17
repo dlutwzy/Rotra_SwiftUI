@@ -77,7 +77,7 @@ struct HeroLevelUpView: View {
                 
                 Text(hero.description)
                     .font(Font.system(size: 12.0))
-                Spacer().frame(height: 4.0)
+                Spacer().frame(height: 10.0)
                 
                 ForEach(hero.skills) { skill in
                     VStack(spacing: 2.0) {
@@ -85,17 +85,21 @@ struct HeroLevelUpView: View {
                             Text(skill.name)
                                 .font(Font.system(size: 12.0))
                             Spacer()
-                            Text("\(skill.prepared ? "" : "解锁等级: \(skill.requiredLevel)")")
+                            Text("\(skill.prepared ? "已解锁" : "解锁等级: \(skill.requiredLevel)")")
                                 .font(Font.system(size: 12.0))
+                                .italic()
                         }
                         HStack {
                             Text(skill.description)
                                 .font(Font.system(size: 12.0))
+                                .foregroundColor(.gray)
+                                .italic()
                             Spacer()
                         }
                     }
-                    Spacer().frame(height: 6.0)
+                    Spacer().frame(height: 10.0)
                 }
+                .padding([.leading, .trailing], 2.0)
                 Spacer().frame(height: 16.0)
                 
                 Button("学习额外技能") {

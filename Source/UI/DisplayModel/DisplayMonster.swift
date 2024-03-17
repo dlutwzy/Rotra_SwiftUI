@@ -34,9 +34,9 @@ extension DisplayMonster: MonsterDelegate {
         }
     }
     
-    func performDamage(values: Int64) {
+    func performDamage(values: Int64, skill: Skill) {
         reveiver?.displayLabelUpdate(labels: [
-            "\(values)"
+            "\(skill.name): \(values)"
         ])
     }
 }

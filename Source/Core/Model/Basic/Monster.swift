@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MonsterDelegate: AnyObject {
-    func performDamage(values: Int64)
+    func performDamage(values: Int64, skill: Skill)
     func hpChanged(monster: Monster, hp: Int64)
     func die(monster: Monster)
 }
@@ -36,7 +36,7 @@ class Monster: Basic {
     
     func damage(from: Hero, skill: Skill, value: Int64, origin: Origin) {
         hp -= value
-        delegate?.performDamage(values: value)
+        delegate?.performDamage(values: value, skill: skill)
         engine?.resource(monster: self, value: value, origin: .Gold)
         if hp <= 0 {
             self.die = true

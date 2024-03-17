@@ -177,11 +177,21 @@ extension Engine {
     }
     
     func resource(hero: Hero, skill: Skill, value: Int64, origin: Origin) {
-        
+        switch origin {
+        case .Gold:
+            goldFactory.valueChanged(modifyValue: value)
+        default:
+            factorys.first {
+                $0.type == origin
+            }?.valueChanged(modifyValue: value)
+        }
     }
-    
+}
+
+// MARK: - Hero
+extension Engine {
     func growth(hero: Hero, skill: Skill, value: Int64, growth: (_ heros: [Hero]) -> Void) {
-        
+        growth(heros)
     }
 }
 
@@ -233,6 +243,7 @@ extension Engine {
         static let heros: [Hero] = [
             Soldier(),
             Cook(),
+            IceGirl(),
             ArrowGirl(),
             KnifeGirl(),
             Deer(),

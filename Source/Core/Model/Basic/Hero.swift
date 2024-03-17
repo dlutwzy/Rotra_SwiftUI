@@ -7,6 +7,12 @@
 
 import Foundation
 
+protocol HeroDelegate: AnyObject {
+    func levelUp(hero: Hero, value: Int64)
+    func attackValueChanged(hero: Hero, value: Int64)
+    func speedValueChanged(hero: Hero, value: Int64)
+}
+
 class Hero: Basic {
     
     var origin: Origin = .Gold
@@ -32,6 +38,7 @@ class Hero: Basic {
     
     var attack: Int64 = 0
     var speed: Int64 = 0
+    var displaySpeed: Double { Double(speed) / 1000000.0 }
     
     var normalAttack: Skill = NormalAttack()
     var giftOne: Skill?
@@ -62,19 +69,21 @@ class Hero: Basic {
     }
     var activeSkills: [Skill] {
         get {
-            var skills = [Skill]()
+            var array = [Skill]()
             
-            skills.forEach { skill in
+            self.skills.forEach { skill in
                 if skill.prepared {
-                    skills.append(skill)
+                    array.append(skill)
                 }
             }
             
-            return skills
+            return array
         }
     }
     
     weak var engine: Engine?
+    
+    weak var delegate: HeroDelegate?
     
     // MARK: Running attribute
     
@@ -109,6 +118,11 @@ class Hero: Basic {
                 }
             }
         }
+        
+        normalAttack.load(hero: self)
+        skills.forEach { skill in
+            skill.load(hero: self)
+        }
     }
     
     final func alwaysLoad() {
@@ -134,7 +148,7 @@ class Hero: Basic {
         
         prepareSkills.forEach { skill in
             skill.engine = self.engine
-            skill.prepared(hero: self)
+            skill.prepare()
         }
     }
     
@@ -218,11 +232,37 @@ class Hero: Basic {
             ], forKey: identifier)
         }
     }
+    
+    struct StaticValues {
+        static let maxAttack: Int64 = 9000000000000000000
+        static let minSpeed: Int64 = 20000
+    }
 }
 
 extension Hero {
-    final func timeUpdate(time: TimeInterval) {
+    func timeUpdate(time: TimeInterval) {
         (normalAttack as? TimerSkill)?.timeUpdate(time: time)
+        
+        activeSkills.forEach { skill in
+            (skill as? TimerSkill)?.timeUpdate(time: time)
+        }
+    }
+}
+
+// MARK: -Hero
+extension Hero {
+    func attackValueChanged(value: Int64) {
+        let newValue =  Double(attack) + Double(value)
+        attack = newValue < Double(StaticValues.maxAttack) ? Int64(newValue) : StaticValues.maxAttack
+        
+        delegate?.attackValueChanged(hero: self, value: attack)
+    }
+    
+    func speedValueChanged(value: Int64) {
+        let newValue =  Double(speed) + Double(value)
+        speed = newValue > Double(StaticValues.minSpeed) ? Int64(newValue) : StaticValues.minSpeed
+        
+        delegate?.speedValueChanged(hero: self, value: speed)
     }
 }
 
@@ -233,6 +273,9 @@ extension Hero {
     
     func enableSkill(skill: Skill) {
         
+        if let secondarySkill = skill as? SecondarySkill {
+            (normalAttack as? NormalAttack)?.pushSecondarySkill(skill: secondarySkill)
+        }
     }
 }
 

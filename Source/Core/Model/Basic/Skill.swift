@@ -46,24 +46,34 @@ class Skill: Basic {
     
     func action() { }
     
-    // MARK: live circle
-    func removeFromHero() {
-        if prepared {
-            hero?.removeSkill(skill: self)
-        }
-        hero = nil
+    func load(hero: Hero) {
+        self.hero = hero
     }
     
-    func prepared(hero: Hero) {
-        self.hero = hero
+    func prepare() {
+        guard let hero = self.hero else {
+            return
+        }
         
         if hero.attackLevel + hero.speedLevel + 1 < requiredLevel {
             prepared = false
             return
         }
         
+        prepared = true
         // TODO setup running attribute
         hero.enableSkill(skill: self)
+    }
+}
+
+// MARK: Life circle
+extension Skill {
+    // MARK: life circle
+    func removeFromHero() {
+        if prepared {
+            hero?.removeSkill(skill: self)
+        }
+        hero = nil
     }
     
     func heroUpdate(hero: Hero) {
@@ -86,6 +96,12 @@ extension Skill {
     }
 }
 
+extension Skill: Identifiable {
+    var id: String {
+        (hero?.identifier ?? "") + identifier + "." + "\(isLearning ? "1" : "0")"
+    }
+}
+
 class SecondarySkill: Skill {
     var random: Int = 0
     var displayRandom: Int = 0
@@ -94,12 +110,22 @@ class SecondarySkill: Skill {
         super.setup()
     }
     
+    override func prepare() {
+        displayRandom = random
+        
+        super.prepare()
+    }
+    
     func trigger() {
-        if Int.random(in: 0...10000) > random {
+        guard _canPerfom() else {
             return
         }
         
         action()
+    }
+    
+    private func _canPerfom() -> Bool {
+        (displayRandom >= 10000) ? true : (Int.random(in: 0...10000) > random)
     }
 }
 
@@ -127,10 +153,10 @@ class TimerSkill: Skill {
         
     }
     
-    override func prepared(hero: Hero) {
-        super.prepared(hero: hero)
+    override func prepare() {
+        super.prepare()
         
-        if prepared {
+        if !prepared {
             return
         }
         
@@ -143,11 +169,5 @@ class TimerSkill: Skill {
         var lastUpdateTime: TimeInterval
         var nextUpdateTime: TimeInterval
         var extInfo: [String: Any]
-    }
-}
-
-extension Skill: Identifiable {
-    var id: String {
-        (hero?.identifier ?? "") + identifier + "." + "\(isLearning ? "1" : "0")"
     }
 }

@@ -9,13 +9,13 @@ import Foundation
 import SwiftUI
 
 struct HeroDisplayCell: View {
-    let displayHero: DisplayHero
+    @ObservedObject var displayHero: DisplayHero
     let tapAction: (() -> Void)?
     var body: some View {
         let hero = displayHero.hero ?? Hero()
         HStack {
             ZStack {
-                Image(systemName: hero.imageName)
+                Image(systemName: displayHero.imageName)
                     .resizable()
                     .frame(width: 40.0, height: 40.0)
                     .padding(EdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4))
@@ -26,10 +26,10 @@ struct HeroDisplayCell: View {
             )
             VStack(alignment: .leading, spacing: 2.0) {
                 HStack {
-                    Text(hero.name)
+                    Text(displayHero.name)
                         .font(Font.system(size: 12.0))
                     Spacer()
-                    Text("等级: \(hero.level)")
+                    Text("等级: \(displayHero.level)")
                         .font(Font.system(size: 12.0))
                 }
                 
@@ -37,7 +37,7 @@ struct HeroDisplayCell: View {
                     Text("攻击力")
                         .font(Font.system(size: 12.0))
                     Spacer()
-                    Text("\(hero.attack)")
+                    Text(displayHero.attack)
                         .font(Font.system(size: 12.0))
                 }
                 
