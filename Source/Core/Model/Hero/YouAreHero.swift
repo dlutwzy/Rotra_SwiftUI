@@ -19,7 +19,7 @@ class YouAreHero: Hero {
         basicAttack = 1
         basicSpeed = 4000000
         
-        giftOne = BaQi()
+        giftOne = OtherWorldHit()
         giftTwo = IceBody()
         giftThree = IceCreator()
     }

@@ -171,3 +171,20 @@ class TimerSkill: Skill {
         var extInfo: [String: Any]
     }
 }
+
+class SinglableSkill: Skill {
+    
+    var singles: [String] = [String]()
+    
+    final func single(id: String, values: [String: Any]? = nil) {
+        guard canSingle(id: id, values: values) else {
+            return
+        }
+        
+        action()
+    }
+    
+    func canSingle(id: String, values: [String: Any]?) -> Bool {
+        return singles.contains(id)
+    }
+}

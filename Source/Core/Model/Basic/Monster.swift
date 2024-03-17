@@ -79,6 +79,10 @@ class Monster: Basic {
         save()
     }
     
+    final func otherWorldHit() {
+        engine?.single(id: "id.single.otherWorldHit")
+    }
+    
     final func save() {
         guard let engine = self.engine else {
             return

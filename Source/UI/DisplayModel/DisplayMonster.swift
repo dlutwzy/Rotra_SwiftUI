@@ -21,6 +21,10 @@ class DisplayMonster: ObservableObject, FallsSender {
     }
     
     weak var reveiver: FallsReceiver?
+    
+    final func onMonsterTapped() {
+        monster?.otherWorldHit()
+    }
 }
 
 extension DisplayMonster: MonsterDelegate {

@@ -247,6 +247,12 @@ extension Hero {
             (skill as? TimerSkill)?.timeUpdate(time: time)
         }
     }
+    
+    func single(id: String, values: [String: Any]?) {
+        skills.forEach { skill in
+            (skill as? SinglableSkill)?.single(id: id, values: values)
+        }
+    }
 }
 
 // MARK: -Hero

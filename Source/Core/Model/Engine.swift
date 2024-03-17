@@ -193,6 +193,12 @@ extension Engine {
     func growth(hero: Hero, skill: Skill, value: Int64, growth: (_ heros: [Hero]) -> Void) {
         growth(heros)
     }
+    
+    func single(id: String, values: [String: Any]? = nil) {
+        heros.forEach { hero in
+            hero.single(id: id, values: values)
+        }
+    }
 }
 
 extension Engine {

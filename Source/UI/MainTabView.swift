@@ -45,6 +45,9 @@ struct MonsterDisplayView: View {
             }
             .aspectRatio(16.0 / 9.0, contentMode: .fit)
             .frame(maxWidth: .infinity)
+            .onTapGesture {
+                monster.onMonsterTapped()
+            }
         }
         .frame(maxWidth: .infinity)
     }
