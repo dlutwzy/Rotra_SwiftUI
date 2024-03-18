@@ -260,7 +260,8 @@ extension Engine {
         static let monsters: [Monster] = [
             Wolf(),
             ThreeHeadWolf(),
-            SmallKing()
+            SmallKing(),
+            FinalBoss()
         ]
         static let factorys: [Factory] = [
             RiceFactory(),
